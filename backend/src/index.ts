@@ -73,10 +73,10 @@ app.use('/api/files', filesRoutes);
 
 // Serve static files in production
 if (!isDevelopment) {
-  app.use(express.static(path.join(__dirname, '../client')));
+  app.use(express.static(path.join(__dirname, '../../frontend/dist')));
   
   app.get('*', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../client/index.html'));
+    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
   });
 }
 

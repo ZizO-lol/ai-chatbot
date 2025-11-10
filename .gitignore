@@ -44,7 +44,8 @@ yarn-error.log*
 /playwright/*
 
 # Vite
-dist/
+frontend/dist/
+backend/dist/
 *.local
 
 # Backup files
@@ -52,3 +53,6 @@ dist/
 
 # Prisma
 prisma/migrations/
+
+# TypeScript
+tsconfig.tsbuildinfo
