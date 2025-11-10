@@ -222,7 +222,7 @@ export function Chat({
             <AlertDialogTitle>Activate AI Gateway</AlertDialogTitle>
             <AlertDialogDescription>
               This application requires{" "}
-              {process.env.NODE_ENV === "production" ? "the owner" : "you"} to
+              {import.meta.env.MODE === "production" ? "the owner" : "you"} to
               activate Vercel AI Gateway.
             </AlertDialogDescription>
           </AlertDialogHeader>
