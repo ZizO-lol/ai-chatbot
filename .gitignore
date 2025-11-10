@@ -42,3 +42,13 @@ yarn-error.log*
 /playwright-report/
 /blob-report/
 /playwright/*
+
+# Vite
+dist/
+*.local
+
+# Backup files
+*.backup
+
+# Prisma
+prisma/migrations/
