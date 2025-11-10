@@ -58,7 +58,15 @@ ai-chatbot/
 └── README.md         # This file
 ```
 
-See [frontend/README.md](frontend/README.md) and [backend/README.md](backend/README.md) for detailed documentation.
+## 📚 Documentation
+
+**Quick Start Guides:**
+- **[Frontend Structure](FRONTEND_STRUCTURE.md)** - Easy guide to frontend architecture and components
+- **[API Endpoints](API_ENDPOINTS.md)** - Simple documentation of all backend API routes
+
+**Detailed Technical Docs:**
+- [frontend/README.md](frontend/README.md) - Frontend setup and configuration
+- [backend/README.md](backend/README.md) - Backend setup and database management
 
 ## Model Providers
 
