@@ -2,7 +2,7 @@ import { streamObject, tool, type UIMessageStreamWriter } from "ai";
 import type { Session } from '@/lib/auth';
 import { z } from "zod";
 import { getDocumentById, saveSuggestions } from "@/lib/db/queries";
-import type { Suggestion } from "@/lib/db/schema";
+import type { Suggestion } from "@/lib/types";
 import type { ChatMessage } from "@/lib/types";
 import { generateUUID } from "@/lib/utils";
 import { myProvider } from "../providers";

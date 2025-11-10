@@ -5,8 +5,46 @@ import type { createDocument } from "./ai/tools/create-document";
 import type { getWeather } from "./ai/tools/get-weather";
 import type { requestSuggestions } from "./ai/tools/request-suggestions";
 import type { updateDocument } from "./ai/tools/update-document";
-import type { Suggestion } from "./db/schema";
 import type { AppUsage } from "./usage";
+
+// Database types (matching Prisma schema)
+export type DBMessage = {
+  id: string;
+  chatId: string;
+  role: string;
+  parts: any;
+  attachments: any;
+  createdAt: Date;
+};
+
+export type Document = {
+  id: string;
+  title: string;
+  content: string | null;
+  kind: string;
+  userId: string;
+  createdAt: Date;
+};
+
+export type Suggestion = {
+  id: string;
+  documentId: string;
+  documentCreatedAt: Date;
+  originalText: string;
+  suggestedText: string;
+  description: string | null;
+  isResolved: boolean;
+  userId: string;
+  createdAt: Date;
+};
+
+export type Vote = {
+  id: string;
+  chatId: string;
+  messageId: string;
+  type: string;
+  createdAt: Date;
+};
 
 export type DataPart = { type: "append-message"; message: string };
 

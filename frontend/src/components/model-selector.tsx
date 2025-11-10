@@ -1,6 +1,6 @@
 import type { Session } from '@/lib/auth';
-import { startTransition, useMemo, useOptimistic, useState } from "react";
-import { saveChatModelAsCookie } from "@/app/(chat)/actions";
+import { startTransition, useMemo, useState } from "react";
+import { saveChatModelAsCookie } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,8 +22,7 @@ export function ModelSelector({
   selectedModelId: string;
 } & React.ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false);
-  const [optimisticModelId, setOptimisticModelId] =
-    useOptimistic(selectedModelId);
+  const [currentModelId, setCurrentModelId] = useState(selectedModelId);
 
   const userType = session.user.type;
   const { availableChatModelIds } = entitlementsByUserType[userType];
@@ -35,9 +34,9 @@ export function ModelSelector({
   const selectedChatModel = useMemo(
     () =>
       availableChatModels.find(
-        (chatModel) => chatModel.id === optimisticModelId
+        (chatModel) => chatModel.id === currentModelId
       ),
-    [optimisticModelId, availableChatModels]
+    [currentModelId, availableChatModels]
   );
 
   return (
@@ -68,14 +67,14 @@ export function ModelSelector({
           return (
             <DropdownMenuItem
               asChild
-              data-active={id === optimisticModelId}
+              data-active={id === currentModelId}
               data-testid={`model-selector-item-${id}`}
               key={id}
               onSelect={() => {
                 setOpen(false);
 
                 startTransition(() => {
-                  setOptimisticModelId(id);
+                  setCurrentModelId(id);
                   saveChatModelAsCookie(id);
                 });
               }}
