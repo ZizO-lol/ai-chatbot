@@ -1,5 +1,3 @@
-"use client";
-
 import { useTheme } from "next-themes";
 import { parse, unparse } from "papaparse";
 import { memo, useEffect, useMemo, useState } from "react";

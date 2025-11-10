@@ -1,8 +1,6 @@
-"use client";
-
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import type { User } from "next-auth";
+import Link from '@/components/Link';
+import { useRouter } from '@/lib/navigation';
+import type { User } from '@/lib/auth';
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from '@/components/Image';
 import type { Attachment } from "@/lib/types";
 import { Loader } from "./elements/loader";
 import { CrossSmallIcon } from "./icons";

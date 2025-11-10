@@ -1,5 +1,3 @@
-"use client";
-
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useWindowSize } from "usehooks-ts";

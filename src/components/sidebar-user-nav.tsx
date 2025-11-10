@@ -1,10 +1,8 @@
-"use client";
-
 import { ChevronUp } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import type { User } from "next-auth";
-import { signOut, useSession } from "next-auth/react";
+import Image from '@/components/Image';
+import { useRouter } from '@/lib/navigation';
+import type { User } from '@/lib/auth';
+import { signOut, useSession } from '@/lib/auth';
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,

@@ -1,5 +1,3 @@
-"use client";
-
 import { python } from "@codemirror/lang-python";
 import { EditorState, Transaction } from "@codemirror/state";
 import { oneDark } from "@codemirror/theme-one-dark";

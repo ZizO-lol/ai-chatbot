@@ -1,9 +1,7 @@
-"use client";
-
 import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
 import { motion } from "framer-motion";
-import { useParams, useRouter } from "next/navigation";
-import type { User } from "next-auth";
+import { useParams, useRouter } from '@/lib/navigation';
+import type { User } from '@/lib/auth';
 import { useState } from "react";
 import { toast } from "sonner";
 import useSWRInfinite from "swr/infinite";

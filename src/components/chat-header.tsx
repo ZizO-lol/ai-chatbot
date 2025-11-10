@@ -1,7 +1,5 @@
-"use client";
-
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from '@/components/Link';
+import { useRouter } from '@/lib/navigation';
 import { memo } from "react";
 import { useWindowSize } from "usehooks-ts";
 import { SidebarToggle } from "@/components/sidebar-toggle";

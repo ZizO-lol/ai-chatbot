@@ -1,6 +1,4 @@
-"use client";
-
-import type { Session } from "next-auth";
+import type { Session } from '@/lib/auth';
 import { startTransition, useMemo, useOptimistic, useState } from "react";
 import { saveChatModelAsCookie } from "@/app/(chat)/actions";
 import { Button } from "@/components/ui/button";

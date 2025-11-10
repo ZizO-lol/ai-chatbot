@@ -1,5 +1,3 @@
-"use client";
-
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { useEffect } from "react";
 import { useDataStream } from "@/components/data-stream-provider";

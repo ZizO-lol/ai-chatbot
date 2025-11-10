@@ -5,9 +5,15 @@ interface User {
   email: string;
 }
 
+interface Session {
+  user: User;
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  data: Session | null;
+  status: 'loading' | 'authenticated' | 'unauthenticated';
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -83,8 +89,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const status = loading ? 'loading' : user ? 'authenticated' : 'unauthenticated';
+  const data = user ? { user } : null;
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, data, status, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

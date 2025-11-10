@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 import type { UIArtifact } from "@/components/artifact";

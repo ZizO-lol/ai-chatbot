@@ -1,5 +1,3 @@
-"use client";
-
 import { isAfter } from "date-fns";
 import { motion } from "framer-motion";
 import { useState } from "react";

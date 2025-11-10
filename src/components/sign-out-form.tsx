@@ -6,9 +6,7 @@ export const SignOutForm = () => {
   return (
     <Form
       action={async () => {
-        "use server";
-
-        await signOut({
+                await signOut({
           redirectTo: "/",
         });
       }}
