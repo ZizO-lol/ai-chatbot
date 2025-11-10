@@ -18,4 +18,19 @@ export const chatModels: ChatModel[] = [
     description:
       "Uses advanced chain-of-thought reasoning for complex problems",
   },
+  {
+    id: "azure-gpt-4o",
+    name: "Azure GPT-4o",
+    description: "Azure OpenAI's GPT-4o model for advanced reasoning and generation",
+  },
+  {
+    id: "azure-gpt-4o-mini",
+    name: "Azure GPT-4o Mini",
+    description: "Smaller, faster version of GPT-4o via Azure OpenAI",
+  },
+  {
+    id: "azure-gpt-35-turbo",
+    name: "Azure GPT-3.5 Turbo",
+    description: "Fast and efficient model via Azure OpenAI",
+  },
 ];
