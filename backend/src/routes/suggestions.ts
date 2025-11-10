@@ -4,6 +4,9 @@ import { isAuthenticated, AuthenticatedRequest } from '../middleware/auth';
 
 const router = express.Router();
 
+// Helper to create error response
+const createError = (code: string, message: string) => ({ code, message });
+
 // Get suggestions by documentId
 router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -11,11 +14,11 @@ router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json(createError('unauthorized:suggestions', 'You need to sign in before continuing.'));
     }
 
     if (!documentId || typeof documentId !== 'string') {
-      return res.status(400).json({ error: 'documentId query parameter is required' });
+      return res.status(400).json(createError('bad_request:api', 'The request couldn\'t be processed. Please check your input and try again.'));
     }
 
     // Verify the document belongs to the user
@@ -27,7 +30,7 @@ router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response
     });
 
     if (!document) {
-      return res.status(404).json({ error: 'Document not found' });
+      return res.status(404).json(createError('not_found:suggestions', 'The requested document was not found.'));
     }
 
     const suggestions = await prisma.suggestion.findMany({
@@ -43,7 +46,7 @@ router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response
     res.json({ suggestions });
   } catch (error) {
     console.error('Error fetching suggestions:', error);
-    res.status(500).json({ error: 'Failed to fetch suggestions' });
+    res.status(500).json(createError('database:suggestions', 'An error occurred while executing a database query.'));
   }
 });
 

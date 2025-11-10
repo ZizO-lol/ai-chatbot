@@ -4,6 +4,9 @@ import { isAuthenticated, AuthenticatedRequest } from '../middleware/auth';
 
 const router = express.Router();
 
+// Helper to create error response
+const createError = (code: string, message: string) => ({ code, message });
+
 // Get documents for authenticated user
 router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -11,28 +14,17 @@ router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response
     const { id } = req.query;
 
     if (!userId) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json(createError('unauthorized:document', 'You need to sign in to view this document. Please sign in and try again.'));
     }
 
-    // If id is provided, get specific document
-    if (id && typeof id === 'string') {
-      const document = await prisma.document.findFirst({
-        where: {
-          id: id,
-          userId: userId,
-        },
-      });
-
-      if (!document) {
-        return res.status(404).json({ error: 'Document not found' });
-      }
-
-      return res.json({ document });
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json(createError('bad_request:api', 'The request couldn\'t be processed. Please check your input and try again.'));
     }
 
-    // Otherwise, get all documents for user
+    // Get all versions of the document
     const documents = await prisma.document.findMany({
       where: {
+        id: id,
         userId: userId,
       },
       orderBy: {
@@ -40,10 +32,14 @@ router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response
       },
     });
 
-    res.json({ documents });
+    if (documents.length === 0) {
+      return res.status(404).json(createError('not_found:document', 'The requested document was not found. Please check the document ID and try again.'));
+    }
+
+    res.json(documents);
   } catch (error) {
     console.error('Error fetching documents:', error);
-    res.status(500).json({ error: 'Failed to fetch documents' });
+    res.status(500).json(createError('database:document', 'An error occurred while executing a database query.'));
   }
 });
 
@@ -54,46 +50,34 @@ router.post('/', isAuthenticated, async (req: AuthenticatedRequest, res: Respons
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json(createError('unauthorized:document', 'You need to sign in to view this document. Please sign in and try again.'));
     }
 
     if (!title) {
-      return res.status(400).json({ error: 'title is required' });
+      return res.status(400).json(createError('bad_request:document', 'The request to create or update the document was invalid. Please check your input and try again.'));
     }
 
-    // If id is provided, try to update existing document
+    // If id is provided, check if document exists and belongs to user
     if (id) {
-      const existingDocument = await prisma.document.findFirst({
+      const existingDocuments = await prisma.document.findMany({
         where: {
           id: id,
-          userId: userId,
+        },
+        take: 1,
+        orderBy: {
+          createdAt: 'desc',
         },
       });
 
-      if (!existingDocument) {
-        return res.status(404).json({ error: 'Document not found' });
+      if (existingDocuments.length > 0 && existingDocuments[0].userId !== userId) {
+        return res.status(403).json(createError('forbidden:document', 'This document belongs to another user. Please check the document ID and try again.'));
       }
-
-      const updatedDocument = await prisma.document.update({
-        where: {
-          id_createdAt: {
-            id: id,
-            createdAt: existingDocument.createdAt,
-          },
-        },
-        data: {
-          title: title,
-          content: content !== undefined ? content : existingDocument.content,
-          kind: kind !== undefined ? kind : existingDocument.kind,
-        },
-      });
-
-      return res.json({ document: updatedDocument });
     }
 
-    // Create new document
+    // Create new version of document
     const document = await prisma.document.create({
       data: {
+        id: id,
         title: title,
         content: content || null,
         kind: kind || 'text',
@@ -101,10 +85,69 @@ router.post('/', isAuthenticated, async (req: AuthenticatedRequest, res: Respons
       },
     });
 
-    res.status(201).json({ document });
+    res.json([document]);
   } catch (error) {
     console.error('Error saving document:', error);
-    res.status(500).json({ error: 'Failed to save document' });
+    res.status(500).json(createError('database:document', 'An error occurred while executing a database query.'));
+  }
+});
+
+// Delete a document version
+router.delete('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { id, timestamp } = req.query;
+
+    if (!userId) {
+      return res.status(401).json(createError('unauthorized:document', 'You need to sign in to view this document. Please sign in and try again.'));
+    }
+
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json(createError('bad_request:api', 'The request couldn\'t be processed. Please check your input and try again.'));
+    }
+
+    if (!timestamp || typeof timestamp !== 'string') {
+      return res.status(400).json(createError('bad_request:api', 'The request couldn\'t be processed. Please check your input and try again.'));
+    }
+
+    // Check if document exists and belongs to user
+    const document = await prisma.document.findFirst({
+      where: {
+        id: id,
+        createdAt: new Date(timestamp),
+        userId: userId,
+      },
+    });
+
+    if (!document) {
+      return res.status(404).json(createError('not_found:document', 'The requested document was not found. Please check the document ID and try again.'));
+    }
+
+    // Delete the specific version
+    await prisma.document.delete({
+      where: {
+        id_createdAt: {
+          id: id,
+          createdAt: new Date(timestamp),
+        },
+      },
+    });
+
+    // Return remaining versions
+    const remainingDocuments = await prisma.document.findMany({
+      where: {
+        id: id,
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    res.json(remainingDocuments);
+  } catch (error) {
+    console.error('Error deleting document:', error);
+    res.status(500).json(createError('database:document', 'An error occurred while executing a database query.'));
   }
 });
 

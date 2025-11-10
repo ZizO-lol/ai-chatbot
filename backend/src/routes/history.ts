@@ -4,13 +4,16 @@ import { isAuthenticated, AuthenticatedRequest } from '../middleware/auth';
 
 const router = express.Router();
 
+// Helper to create error response
+const createError = (code: string, message: string) => ({ code, message });
+
 // Get chat history for authenticated user
 router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json(createError('unauthorized:history', 'You need to sign in before continuing.'));
     }
 
     const chats = await prisma.chat.findMany({
@@ -31,7 +34,7 @@ router.get('/', isAuthenticated, async (req: AuthenticatedRequest, res: Response
     res.json({ chats });
   } catch (error) {
     console.error('Error fetching chat history:', error);
-    res.status(500).json({ error: 'Failed to fetch chat history' });
+    res.status(500).json(createError('database:history', 'An error occurred while executing a database query.'));
   }
 });
 
