@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique @db.VarChar(64)
+  password  String?  @db.VarChar(64)
+  chats     Chat[]
+  documents Document[]
+  suggestions Suggestion[]
+
+  @@map("User")
+}
+
+model Chat {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now())
+  title       String   @db.Text
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id])
+  visibility  String   @default("private") @db.VarChar(10)
+  lastContext Json?    @db.JsonB
+  messages    Message_v2[]
+  votes       Vote_v2[]
+  streams     Stream[]
+
+  @@map("Chat")
+}
+
+// Deprecated Message table
+model Message {
+  id        String   @id @default(uuid()) @db.Uuid
+  chatId    String   @db.Uuid
+  role      String   @db.VarChar(255)
+  content   Json     @db.Json
+  createdAt DateTime @default(now())
+
+  @@map("Message")
+}
+
+// Current Message table
+model Message_v2 {
+  id          String   @id @default(uuid()) @db.Uuid
+  chatId      String   @db.Uuid
+  chat        Chat     @relation(fields: [chatId], references: [id])
+  role        String   @db.VarChar(255)
+  parts       Json     @db.Json
+  attachments Json     @db.Json
+  createdAt   DateTime @default(now())
+  votes       Vote_v2[]
+
+  @@map("Message_v2")
+}
+
+// Deprecated Vote table
+model Vote {
+  chatId     String  @db.Uuid
+  messageId  String  @db.Uuid
+  isUpvoted  Boolean
+
+  @@id([chatId, messageId])
+  @@map("Vote")
+}
+
+// Current Vote table
+model Vote_v2 {
+  chatId    String     @db.Uuid
+  chat      Chat       @relation(fields: [chatId], references: [id])
+  messageId String     @db.Uuid
+  message   Message_v2 @relation(fields: [messageId], references: [id])
+  isUpvoted Boolean
+
+  @@id([chatId, messageId])
+  @@map("Vote_v2")
+}
+
+model Document {
+  id        String   @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  title     String   @db.Text
+  content   String?  @db.Text
+  kind      String   @default("text") @db.VarChar(10)
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  suggestions Suggestion[]
+
+  @@id([id, createdAt])
+  @@map("Document")
+}
+
+model Suggestion {
+  id                  String   @id @default(uuid()) @db.Uuid
+  documentId          String   @db.Uuid
+  documentCreatedAt   DateTime
+  originalText        String   @db.Text
+  suggestedText       String   @db.Text
+  description         String?  @db.Text
+  isResolved          Boolean  @default(false)
+  userId              String   @db.Uuid
+  user                User     @relation(fields: [userId], references: [id])
+  createdAt           DateTime @default(now())
+  document            Document @relation(fields: [documentId, documentCreatedAt], references: [id, createdAt])
+
+  @@map("Suggestion")
+}
+
+model Stream {
+  id        String   @id @default(uuid()) @db.Uuid
+  chatId    String   @db.Uuid
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@map("Stream")
+}
