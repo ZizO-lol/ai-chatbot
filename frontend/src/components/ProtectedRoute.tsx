@@ -1,5 +1,5 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/lib/auth-context';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/lib/auth-context";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate replace to="/login" />;
   }
 
   return <>{children}</>;

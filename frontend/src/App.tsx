@@ -1,13 +1,13 @@
-import { Route, Routes } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import { ThemeProvider } from '@/components/theme-provider';
-import { AuthProvider } from '@/lib/auth-context';
-import { DataStreamProvider } from '@/components/data-stream-provider';
-import RootLayout from '@/components/RootLayout';
-import ChatPage from '@/pages/ChatPage';
-import LoginPage from '@/pages/LoginPage';
-import RegisterPage from '@/pages/RegisterPage';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import { Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
+import { DataStreamProvider } from "@/components/data-stream-provider";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import RootLayout from "@/components/RootLayout";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/lib/auth-context";
+import ChatPage from "@/pages/ChatPage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
 
 function App() {
   return (
@@ -21,10 +21,9 @@ function App() {
         <DataStreamProvider>
           <Toaster position="top-center" />
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route element={<LoginPage />} path="/login" />
+            <Route element={<RegisterPage />} path="/register" />
             <Route
-              path="/"
               element={
                 <ProtectedRoute>
                   <RootLayout>
@@ -32,9 +31,9 @@ function App() {
                   </RootLayout>
                 </ProtectedRoute>
               }
+              path="/"
             />
             <Route
-              path="/chat/:id"
               element={
                 <ProtectedRoute>
                   <RootLayout>
@@ -42,6 +41,7 @@ function App() {
                   </RootLayout>
                 </ProtectedRoute>
               }
+              path="/chat/:id"
             />
           </Routes>
         </DataStreamProvider>

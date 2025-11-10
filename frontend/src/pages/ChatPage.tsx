@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import useSWR from 'swr';
-import { Chat } from '@/components/chat';
-import { DataStreamHandler } from '@/components/data-stream-handler';
-import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
-import { convertToUIMessages, fetcher, generateUUID } from '@/lib/utils';
-import type { Chat as ChatType } from '@/lib/types';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import useSWR from "swr";
+import { Chat } from "@/components/chat";
+import { DataStreamHandler } from "@/components/data-stream-handler";
+import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
+import type { Chat as ChatType } from "@/lib/types";
+import { convertToUIMessages, fetcher, generateUUID } from "@/lib/utils";
 
 const ChatPage = () => {
   const { id } = useParams<{ id?: string }>();
-  const [chatId, setChatId] = useState<string>(id || '');
+  const [chatId, setChatId] = useState<string>(id || "");
 
   // Generate a new chat ID if one doesn't exist
   useEffect(() => {
@@ -24,7 +24,7 @@ const ChatPage = () => {
     fetcher,
     {
       onError: (error) => {
-        console.error('Failed to fetch chat:', error);
+        console.error("Failed to fetch chat:", error);
       },
     }
   );
@@ -39,9 +39,12 @@ const ChatPage = () => {
   }
 
   // Prepare chat data
-  const initialMessages = chatData?.messages ? convertToUIMessages(chatData.messages) : [];
+  const initialMessages = chatData?.messages
+    ? convertToUIMessages(chatData.messages)
+    : [];
   const initialChatModel = chatData?.model || DEFAULT_CHAT_MODEL;
-  const initialVisibilityType = (chatData?.visibility as 'private' | 'public') || 'private';
+  const initialVisibilityType =
+    (chatData?.visibility as "private" | "public") || "private";
   const isReadonly = false;
   const autoResume = false;
   const initialLastContext = chatData?.lastContext || undefined;
@@ -49,14 +52,14 @@ const ChatPage = () => {
   return (
     <>
       <Chat
-        key={chatId}
+        autoResume={autoResume}
         id={chatId}
-        initialMessages={initialMessages}
         initialChatModel={initialChatModel}
+        initialLastContext={initialLastContext}
+        initialMessages={initialMessages}
         initialVisibilityType={initialVisibilityType}
         isReadonly={isReadonly}
-        autoResume={autoResume}
-        initialLastContext={initialLastContext}
+        key={chatId}
       />
       <DataStreamHandler id={chatId} />
     </>

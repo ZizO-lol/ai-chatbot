@@ -1,7 +1,8 @@
 // Simple password generation for guest users
 const generateDummyPassword = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let password = '';
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let password = "";
   for (let i = 0; i < 32; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }

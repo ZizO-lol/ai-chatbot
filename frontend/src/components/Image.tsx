@@ -1,6 +1,6 @@
-import { ImgHTMLAttributes, forwardRef } from 'react';
+import { forwardRef, type ImgHTMLAttributes } from "react";
 
-interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
+interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> {
   src: string;
   alt: string;
   width?: number | string;
@@ -8,7 +8,7 @@ interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   fill?: boolean;
   priority?: boolean;
   quality?: number;
-  placeholder?: 'blur' | 'empty';
+  placeholder?: "blur" | "empty";
   blurDataURL?: string;
 }
 
@@ -20,26 +20,28 @@ const Image = forwardRef<HTMLImageElement, ImageProps>(
 
     if (fill) {
       Object.assign(imgStyle, {
-        position: 'absolute',
-        height: '100%',
-        width: '100%',
+        position: "absolute",
+        height: "100%",
+        width: "100%",
         left: 0,
         top: 0,
         right: 0,
         bottom: 0,
-        objectFit: 'cover',
+        objectFit: "cover",
       });
     } else {
-      if (width) imgStyle.width = typeof width === 'number' ? `${width}px` : width;
-      if (height) imgStyle.height = typeof height === 'number' ? `${height}px` : height;
+      if (width)
+        imgStyle.width = typeof width === "number" ? `${width}px` : width;
+      if (height)
+        imgStyle.height = typeof height === "number" ? `${height}px` : height;
     }
 
     return (
       <img
-        ref={ref}
-        src={src}
         alt={alt}
         className={className}
+        ref={ref}
+        src={src}
         style={imgStyle}
         {...props}
       />
@@ -47,6 +49,6 @@ const Image = forwardRef<HTMLImageElement, ImageProps>(
   }
 );
 
-Image.displayName = 'Image';
+Image.displayName = "Image";
 
 export default Image;

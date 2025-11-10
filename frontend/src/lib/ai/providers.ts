@@ -1,5 +1,5 @@
-import { gateway } from "@ai-sdk/gateway";
 import { createAzure } from "@ai-sdk/azure";
+import { gateway } from "@ai-sdk/gateway";
 import {
   customProvider,
   extractReasoningMiddleware,

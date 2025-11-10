@@ -13,7 +13,7 @@ export function AuthForm({
   defaultEmail?: string;
 }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (typeof action === 'function') {
+    if (typeof action === "function") {
       e.preventDefault();
       const formData = new FormData(e.currentTarget);
       action(formData);
@@ -21,10 +21,10 @@ export function AuthForm({
   };
 
   return (
-    <form 
-      action={typeof action === 'string' ? action : undefined}
-      onSubmit={handleSubmit}
+    <form
+      action={typeof action === "string" ? action : undefined}
       className="flex flex-col gap-4 px-4 sm:px-16"
+      onSubmit={handleSubmit}
     >
       <div className="flex flex-col gap-2">
         <Label

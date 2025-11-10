@@ -1,4 +1,9 @@
-import { useNavigate as useRouterNavigate, useLocation, useParams as useRouterParams, useSearchParams as useRouterSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate as useRouterNavigate,
+  useParams as useRouterParams,
+  useSearchParams as useRouterSearchParams,
+} from "react-router-dom";
 
 export function useRouter() {
   const navigate = useRouterNavigate();
@@ -26,7 +31,7 @@ export function useParams() {
 
 export function useSearchParams() {
   const [searchParams, setSearchParams] = useRouterSearchParams();
-  
+
   return {
     get: (name: string) => searchParams.get(name),
     getAll: (name: string) => searchParams.getAll(name),

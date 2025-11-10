@@ -1,4 +1,4 @@
-import Image from '@/components/Image';
+import Image from "@/components/Image";
 import type { Attachment } from "@/lib/types";
 import { Loader } from "./elements/loader";
 import { CrossSmallIcon } from "./icons";
@@ -36,9 +36,9 @@ export const PreviewAttachment = ({
 
       {isUploading && (
         <div
-	  className="absolute inset-0 flex items-center justify-center bg-black/50"
-	  data-testid="input-attachment-loader"
-	>
+          className="absolute inset-0 flex items-center justify-center bg-black/50"
+          data-testid="input-attachment-loader"
+        >
           <Loader size={16} />
         </div>
       )}

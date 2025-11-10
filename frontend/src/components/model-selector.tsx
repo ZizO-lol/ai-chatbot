@@ -1,6 +1,4 @@
-import type { Session } from '@/lib/auth';
 import { startTransition, useMemo, useState } from "react";
-import { saveChatModelAsCookie } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,8 +6,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { saveChatModelAsCookie } from "@/lib/actions";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
 import { chatModels } from "@/lib/ai/models";
+import type { Session } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { CheckCircleFillIcon, ChevronDownIcon } from "./icons";
 
@@ -33,9 +33,7 @@ export function ModelSelector({
 
   const selectedChatModel = useMemo(
     () =>
-      availableChatModels.find(
-        (chatModel) => chatModel.id === currentModelId
-      ),
+      availableChatModels.find((chatModel) => chatModel.id === currentModelId),
     [currentModelId, availableChatModels]
   );
 
