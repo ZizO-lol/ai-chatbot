@@ -7,7 +7,7 @@ export const SignOutForm = () => {
   };
 
   return (
-    <form onSubmit={handleSignOut} className="w-full">
+    <form className="w-full" onSubmit={handleSignOut}>
       <button
         className="w-full px-1 py-0.5 text-left text-red-500"
         type="submit"

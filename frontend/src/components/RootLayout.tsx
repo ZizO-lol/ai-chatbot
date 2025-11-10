@@ -1,14 +1,20 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from "react";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { useAuth } from "@/lib/auth-context";
 
 interface RootLayoutProps {
   children: ReactNode;
 }
 
 const RootLayout = ({ children }: RootLayoutProps) => {
+  const { user } = useAuth();
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <main className="flex-1">{children}</main>
-    </div>
+    <SidebarProvider>
+      <AppSidebar user={user} />
+      <SidebarInset>{children}</SidebarInset>
+    </SidebarProvider>
   );
 };
 

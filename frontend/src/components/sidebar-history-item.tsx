@@ -1,5 +1,5 @@
-import Link from '@/components/Link';
 import { memo } from "react";
+import Link from "@/components/Link";
 import { useChatVisibility } from "@/hooks/use-chat-visibility";
 import type { Chat } from "@/lib/types";
 import {

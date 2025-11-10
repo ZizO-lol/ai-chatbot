@@ -1,9 +1,6 @@
 import { ChevronUp } from "lucide-react";
-import Image from '@/components/Image';
-import { useRouter } from '@/lib/navigation';
-import type { User } from '@/lib/auth';
-import { signOut, useSession } from '@/lib/auth';
 import { useTheme } from "next-themes";
+import Image from "@/components/Image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +13,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import type { User } from "@/lib/auth";
+import { signOut, useSession } from "@/lib/auth";
 import { guestRegex } from "@/lib/constants";
+import { useRouter } from "@/lib/navigation";
 import { LoaderIcon } from "./icons";
 import { toast } from "./toast";
 

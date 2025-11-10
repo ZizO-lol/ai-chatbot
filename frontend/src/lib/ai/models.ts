@@ -21,7 +21,8 @@ export const chatModels: ChatModel[] = [
   {
     id: "azure-gpt-4o",
     name: "Azure GPT-4o",
-    description: "Azure OpenAI's GPT-4o model for advanced reasoning and generation",
+    description:
+      "Azure OpenAI's GPT-4o model for advanced reasoning and generation",
   },
   {
     id: "azure-gpt-4o-mini",
