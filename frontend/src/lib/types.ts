@@ -17,6 +17,15 @@ export type DBMessage = {
   createdAt: Date;
 };
 
+export type Chat = {
+  id: string;
+  createdAt: Date;
+  title: string;
+  userId: string;
+  visibility: string;
+  lastContext: any | null;
+};
+
 export type Document = {
   id: string;
   title: string;
@@ -43,6 +52,7 @@ export type Vote = {
   chatId: string;
   messageId: string;
   type: string;
+  isUpvoted?: boolean;
   createdAt: Date;
 };
 
