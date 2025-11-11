@@ -56,3 +56,7 @@ prisma/migrations/
 
 # TypeScript
 tsconfig.tsbuildinfo
+
+# Uploads
+backend/uploads/
+uploads/
