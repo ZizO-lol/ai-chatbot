@@ -22,6 +22,7 @@
     "@types/multer": "^2.0.0",
     "ai": "5.0.26",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
