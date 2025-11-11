@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { streamText } from 'ai';
 import { prisma } from '../index';
 import { isAuthenticated, AuthenticatedRequest } from '../middleware/auth';
+import { getModel } from '../lib/ai-providers';
 
 const router = express.Router();
 
@@ -59,8 +60,9 @@ router.post('/', isAuthenticated, async (req: AuthenticatedRequest, res: Respons
     }
 
     // Save the user message
+    let userMessage;
     if (message && typeof message === 'string') {
-      await prisma.message_v2.create({
+      userMessage = await prisma.message_v2.create({
         data: {
           chatId: chat.id,
           role: 'user',
@@ -70,22 +72,76 @@ router.post('/', isAuthenticated, async (req: AuthenticatedRequest, res: Respons
       });
     }
 
-    // TODO: Implement AI streaming with proper model integration
-    // This would require:
-    // 1. Setting up AI provider (Azure OpenAI, OpenAI, etc.)
-    // 2. Implementing streamText with proper context and tools
-    // 3. Saving AI response to database
-    // 4. Handling streaming responses in SSE format
-    
-    // For now, return a mock streaming response
+    // Get chat history for context
+    const messages = await prisma.message_v2.findMany({
+      where: { chatId: chat.id },
+      orderBy: { createdAt: 'asc' },
+      take: 50, // Limit context to last 50 messages
+    });
+
+    // Convert to AI SDK message format
+    const chatMessages = messages.map((msg) => {
+      const parts = msg.parts as any;
+      return {
+        role: msg.role as 'user' | 'assistant',
+        content: parts.text || parts.content || '',
+      };
+    });
+
+    // Get the selected model
+    const model = getModel(selectedChatModel);
+
+    // Set up streaming response
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    
-    // Send a simple mock response
-    res.write(`0:""\n`);
-    res.write(`data: {"id":"${chat.id}","role":"assistant","content":"Chat functionality requires AI provider configuration"}\n\n`);
-    res.end();
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable buffering for nginx
+
+    try {
+      // Stream AI response
+      const result = streamText({
+        model,
+        messages: chatMessages,
+      });
+
+      let fullResponse = '';
+
+      // Stream the response to the client
+      for await (const chunk of result.textStream) {
+        fullResponse += chunk;
+        // Send in AI SDK stream format
+        res.write(`0:"${chunk.replace(/"/g, '\\"')}"\n`);
+      }
+
+      // Save the AI response to database
+      await prisma.message_v2.create({
+        data: {
+          chatId: chat.id,
+          role: 'assistant',
+          parts: { text: fullResponse },
+          attachments: {},
+        },
+      });
+
+      // Update chat's last context with usage info
+      const usage = await result.usage;
+      if (usage && usage.totalTokens) {
+        await prisma.chat.update({
+          where: { id: chat.id },
+          data: {
+            lastContext: {
+              totalTokens: usage.totalTokens,
+            },
+          },
+        });
+      }
+
+      res.end();
+    } catch (error: any) {
+      console.error('Error streaming AI response:', error);
+      res.write(`e:"${error.message || 'An error occurred while generating response'}"\n`);
+      res.end();
+    }
   } catch (error) {
     console.error('Error in chat endpoint:', error);
     res.status(500).json(createError('database:chat', 'An error occurred while executing a database query.'));
@@ -156,17 +212,75 @@ router.get('/:id/stream', isAuthenticated, async (req: AuthenticatedRequest, res
       return res.status(404).json(createError('not_found:chat', 'The requested chat was not found. Please check the chat ID and try again.'));
     }
 
-    // TODO: Implement resumable streaming
-    // This would require:
-    // 1. Checking for existing stream in database
-    // 2. Resuming from last known position
-    // 3. Setting up SSE (Server-Sent Events)
-    // 4. Streaming AI response
-
-    res.status(501).json({ 
-      error: 'Stream endpoint not yet fully implemented',
-      message: 'Streaming requires AI provider and resumable stream configuration'
+    // Check if there's an existing stream
+    const existingStream = await prisma.stream.findFirst({
+      where: { chatId },
+      orderBy: { createdAt: 'desc' },
     });
+
+    // Get chat messages for context
+    const messages = await prisma.message_v2.findMany({
+      where: { chatId: chat.id },
+      orderBy: { createdAt: 'asc' },
+      take: 50,
+    });
+
+    // Convert to AI SDK message format
+    const chatMessages = messages.map((msg) => {
+      const parts = msg.parts as any;
+      return {
+        role: msg.role as 'user' | 'assistant',
+        content: parts.text || parts.content || '',
+      };
+    });
+
+    // Set up streaming response
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+
+    // Create a new stream record
+    const stream = await prisma.stream.create({
+      data: {
+        chatId: chat.id,
+      },
+    });
+
+    try {
+      // Get the model (use chat model as default)
+      const model = getModel();
+
+      // Stream AI response
+      const result = streamText({
+        model,
+        messages: chatMessages,
+      });
+
+      let fullResponse = '';
+
+      // Stream the response to the client
+      for await (const chunk of result.textStream) {
+        fullResponse += chunk;
+        res.write(`0:"${chunk.replace(/"/g, '\\"')}"\n`);
+      }
+
+      // Save the AI response to database
+      await prisma.message_v2.create({
+        data: {
+          chatId: chat.id,
+          role: 'assistant',
+          parts: { text: fullResponse },
+          attachments: {},
+        },
+      });
+
+      res.end();
+    } catch (error: any) {
+      console.error('Error in resumable stream:', error);
+      res.write(`e:"${error.message || 'An error occurred during streaming'}"\n`);
+      res.end();
+    }
   } catch (error) {
     console.error('Error in stream endpoint:', error);
     res.status(500).json(createError('database:chat', 'An error occurred while executing a database query.'));
